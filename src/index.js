@@ -2,17 +2,32 @@ import $ from 'jquery';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/styles.css';
-import Triangle from './js/demo.js';
+import HolidaysService from './js/holidays-service.js';
 
+function getResults(response) {
+  $("#holidays").empty();
+  if (response instanceof Error) {
+    $("#showErrors").text(response)
+  }
+  else if (response) {
+    for(let i=0; i<response.length; i++) {
+      $("#holidays").append(`<li>${response[i].name}</li>`)
+    }
+   
+  }
+  else {
+    $("#showErrors").text(`${response}`);
+  }
+}
 
 $(document).ready(function() {
-  $('#triangle-checker-form').submit(function(event) {
-    event.preventDefault();
-    const length1 = $('#length1').val();
-    const length2 = $('#length2').val();
-    const length3 = $('#length3').val();
-    const triangle = new Triangle(length1, length2, length3);
-    const response = triangle.checkType();
-    $('#response').append("<p>" + response + "</p>");
-  });
+  $("#submit").click(function() {
+    let day = $("#day").val();
+    let month = $("#month").val();
+    HolidaysService.getHoliday(day, month)
+      .then(function(response) {
+        console.log(response);
+        getResults(response);
+      })
+  })
 });
